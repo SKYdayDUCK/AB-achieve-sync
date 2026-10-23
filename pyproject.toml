@@ -6,8 +6,23 @@ build-backend = "setuptools.build_meta"
 name = "adaptive-archive-sync"
 version = "1.2.0"
 description = "Single-producer single-consumer crash-recoverable archive synchronization"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "SKYdayDUCK"}]
+keywords = ["ssh", "sync", "archive", "age", "backup", "image-transfer"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Development Status :: 3 - Alpha",
+]
 requires-python = ">=3.11"
 dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
+
+[project.urls]
+Homepage = "https://github.com/SKYdayDUCK/adaptive-archive-sync"
+Issues = "https://github.com/SKYdayDUCK/adaptive-archive-sync/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]

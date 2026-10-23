@@ -1,5 +1,7 @@
 # Adaptive Archive Sync (AAS)
 
+[![tests](https://github.com/SKYdayDUCK/adaptive-archive-sync/actions/workflows/tests.yml/badge.svg)](https://github.com/SKYdayDUCK/adaptive-archive-sync/actions/workflows/tests.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **把云服务器上不断生成的图片，可靠地同步到本地电脑，同步成功后才清理服务器上的文件。**
 
 *English: AAS reliably moves continuously generated images from a (GPU) cloud server "A" to a local PC "B" over SSH. A batches new images into verified, optionally age-encrypted tar bundles; B polls A, downloads over SSH, verifies, delivers, and only then acknowledges so that A may delete the bundle. Every deletion on A is gated by a persisted proof (verification certificate before the source images are deleted, a matching ACK before the bundle is deleted). B never connects to anything inbound; no public port is needed on the PC.*
@@ -304,4 +306,4 @@ aas-b --config b.yaml status          # B：传输队列
 
 > `reports/` 目录是原始实现包自带的报告，写于本地复测之前，其中“33 passed”等结论仅反映当时 Linux 容器内的结果，以上文 [测试与验证](#测试与验证) 为准。
 
-**许可证：** 尚未指定（默认保留所有权利）。如需开源使用，请仓库所有者选择并添加 LICENSE 文件。
+**许可证：** [MIT](LICENSE)。欢迎提 issue / PR。注意：这是 Alpha 阶段的工程 MVP，请先阅读 [测试与验证](#测试与验证) 中“尚未验证”的部分再用于重要数据。
