@@ -1,0 +1,41 @@
+# A = Linux GPU machine. Start with none in a trusted smoke test;
+# switch to age_x25519 + actual B public keys before operational deployment.
+node:
+  producer_id: gpu-a-01
+  consumer_id: desktop-b-01
+paths:
+  root_dir: /workspace/aas
+  input_dir: /workspace/generated
+batch:
+  max_files: 100
+  max_bytes: 1073741824        # 1 GiB threshold
+  max_batch_bytes: 4294967296  # hard one-image cap for normal batches
+  max_wait_seconds: 600        # oldest eligible item age before small batch flush
+  min_age_seconds: 3           # prefer generator .tmp -> fsync -> atomic rename
+archive:
+  strategy: tar
+  verify_final_archive: true
+  delete_source_after_verified_publish: true
+crypto:
+  strategy: age_x25519
+  recipients:
+    - /etc/aas/keys/b_primary.pub
+    - /etc/aas/keys/b_backup.pub
+ack:
+  delete_bundle_only_after_ack: true
+  ack_grace_seconds: 0
+watch:
+  skip_open_files: true       # Linux: skip files another process still holds open (blind to some SFTP/sandboxed writers)
+  hold_back_newest: 1         # n+1 rule: never pack the newest image, a sequential producer may still be writing it
+  idle_flush_factor: 4        # no new image for 4 x the usual gap => producer finished, flush the tail incl. newest
+  idle_flush_min_seconds: 10
+  idle_flush_max_seconds: 300 # also the wait until 3 gaps have been observed (cold start)
+emergency:
+  enabled: true
+  idle_seconds: 60
+  max_session_seconds: 1800
+capacity:
+  warn_free_bytes: 21474836480
+  critical_free_bytes: 10737418240
+  auto_pause_generator: false
+  auto_delete_unacked: false

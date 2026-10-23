@@ -1,0 +1,7 @@
+Python: 3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]
+OS: Linux-6.18.55-x86_64-with-glibc2.41
+PyYAML: 6.0.3
+Pillow: 12.3.0
+pytest: 9.0.2
+Test result: 33 passed, 1 skipped (age/age-keygen absent).
+Real SSH, real age, Windows and 72h soak: NOT RUN.

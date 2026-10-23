@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-archive-sync"
+version = "1.2.0"
+description = "Single-producer single-consumer crash-recoverable archive synchronization"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+aas-a = "aas.cli:main_a"
+aas-b = "aas.cli:main_b"
+aasctl-shell = "aas.cli:main_shell"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

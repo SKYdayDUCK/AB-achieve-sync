@@ -1,0 +1,18 @@
+started 4295
+batch: {max_files: 5, max_bytes: 1073741824, max_batch_bytes: 4294967296, max_wait_seconds: 5, min_age_seconds: 3}
+watch: {hold_back_newest: 1, idle_flush_factor: 4, idle_flush_min_seconds: 10, idle_flush_max_seconds: 60}
+
+producer start
+producer stopped at +104s; waiting for idle flush
+batch 7cf381f58a0d files=1 ready - last file closed =   +2.0s   [r1w5_0000.png .. r1w5_0000.png]
+batch 132bf090ac35 files=1 ready - last file closed =   +3.2s   [r1w5_0001.png .. r1w5_0001.png]
+batch b8a8bfdd5638 files=1 ready - last file closed =   +2.7s   [r1w5_0002.png .. r1w5_0002.png]
+batch 2ff83b0ac809 files=1 ready - last file closed =   +1.9s   [r1w5_0003.png .. r1w5_0003.png]
+batch d8bf441e2754 files=1 ready - last file closed =   +1.7s   [r1w5_0004.png .. r1w5_0004.png]
+batch 02cc25e1ddfc files=1 ready - last file closed =   +3.2s   [r1w5_0005.png .. r1w5_0005.png]
+batch 245650c056b8 files=1 ready - last file closed =   +1.7s   [r1w5_0006.png .. r1w5_0006.png]
+batch 0867fc1e1cb9 files=1 ready - last file closed =  +43.5s   [r1w5_0007.png .. r1w5_0007.png]
+P1 integrity: 8/8 byte-identical
+P2 packed-while-open violations (hold_back=1, max_wait=5): none
+P3 tail: last file closed, last batch READY +43.5s later; drained=True; watch at stop: {'idle': False, 'held_back': ['r1w5_0007.png'], 'last_activity_age_s': 12.5, 'idle_flush_threshold_s': 52.6}
+P4 final A: {'DELETED': 100} {'images_waiting': 0, 'oldest_waiting_age_s': 0.0, 'in_progress_tmp_files': 0, 'rejected_unsafe_names': [], 'non_image_ignored': 0, 'subdirs_ignored': 0}

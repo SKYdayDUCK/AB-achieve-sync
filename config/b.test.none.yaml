@@ -1,0 +1,11 @@
+# Must be modified for the address and SSH key of your isolated test A machine.
+node: {consumer_id: localB, producer_id: localA}
+paths: {root_dir: /tmp/aas-example-b}
+remote: {transport: ssh_aasctl, host: localhost, user: aas, port: 22, host_key_checking: strict}
+crypto: {strategy: none}
+scheduler:
+  strategy: fixed_interval
+  fixed_interval: {interval_seconds: 5, immediate_scan_on_start: true, single_flight_discovery: true, immediate_recheck_on_new_ready: true, max_immediate_rechecks: 1}
+  reconcile_interval_minutes: 30
+  network_retry: {initial_seconds: 1, max_seconds: 10, jitter: true}
+transfer: {max_parallel_downloads: 2, chunk_bytes: 1048576, durable_queue: true, verify_full_bundle_sha256: true}

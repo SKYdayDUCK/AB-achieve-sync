@@ -1,0 +1,254 @@
+{
+  "preregistered_grid_baseline": {
+    "gamma_poisson": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "3/6 workloads: drift, idle_burst, onoff",
+          "30": "5/6 workloads: diurnal, drift, idle_burst, onoff, periodic",
+          "100": "1/6 workloads: periodic"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "drift@c=100: -9.4%; onoff@c=100: -3.1%; packer@c=10: -4.0%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x1.38/P99x1.40; diurnal@c=30: P95x1.27/P99x1.36; diurnal@c=100: P95x1.27/P99x1.36; drift@c=30: P95x1.51/P99x1.29; idle_burst@c=10: P95x1.07/P99x1.40; idle_burst@c=30: P95x1.40/P99x1.62; onoff@c=30: P95x1.43/P99x1.27; periodic@c=30: P95x2.53/P99x1.22"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 658 B"
+      },
+      "ALL_PASS": false
+    },
+    "gamma_poisson_sqrt": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "3/6 workloads: drift, idle_burst, onoff",
+          "30": "5/6 workloads: diurnal, drift, idle_burst, onoff, periodic",
+          "100": "4/6 workloads: diurnal, drift, idle_burst, onoff"
+        }
+      },
+      "G2_no_harm": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=100: P95x1.22/P99x1.22; drift@c=30: P95x1.17/P99x1.10; idle_burst@c=30: P95x1.29/P99x1.47; onoff@c=30: P95x1.14/P99x1.12; packer@c=10: P95x1.24/P99x1.01; periodic@c=30: P95x1.58/P99x1.11; periodic@c=100: P95x1.17/P99x1.02; poisson@c=100: P95x1.19/P99x1.05"
+      },
+      "G4_negative_control": {
+        "pass": false,
+        "detail": "suspicious Poisson win"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 661 B"
+      },
+      "ALL_PASS": false
+    },
+    "renewal_window": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "4/6 workloads: idle_burst, onoff, packer, periodic",
+          "30": "4/6 workloads: idle_burst, onoff, packer, periodic",
+          "100": "2/6 workloads: idle_burst, onoff"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "diurnal@c=10: -6.9%; packer@c=100: -7.1%; periodic@c=100: -11.3%; poisson@c=10: -13.5%; poisson@c=30: -2.5%; poisson@c=100: -3.8%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x2.63/P99x1.93; diurnal@c=30: P95x1.48/P99x1.42; diurnal@c=100: P95x1.76/P99x1.55; drift@c=30: P95x1.71/P99x1.36; drift@c=100: P95x1.29/P99x1.22; idle_burst@c=10: P95x1.28/P99x1.56; idle_burst@c=30: P95x1.66/P99x1.70; onoff@c=10: P95x1.24/P99x1.27; onoff@c=30: P95x1.72/P99x1.43; onoff@c=100: P95x1.30/P99x1.19; poisson@c=10: P95x2.03/P99x1.33; poisson@c=100: P95x1.90/P99x1.31"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 731 B"
+      },
+      "ALL_PASS": false
+    },
+    "hazard_renewal": {
+      "G1_main_gain": {
+        "pass": true,
+        "detail": {
+          "10": "5/6 workloads: drift, idle_burst, onoff, packer, periodic",
+          "30": "6/6 workloads: diurnal, drift, idle_burst, onoff, packer, periodic",
+          "100": "5/6 workloads: drift, idle_burst, onoff, packer, periodic"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "diurnal@c=10: -5.5%; poisson@c=10: -10.3%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x1.91/P99x1.76; diurnal@c=30: P95x1.09/P99x1.28; diurnal@c=100: P95x1.52/P99x1.49; drift@c=10: P95x1.19/P99x1.19; drift@c=30: P95x1.49/P99x1.28; drift@c=100: P95x1.21/P99x1.21; idle_burst@c=10: P95x1.36/P99x1.58; idle_burst@c=30: P95x1.47/P99x1.63; onoff@c=10: P95x1.23/P99x1.26; onoff@c=30: P95x1.39/P99x1.31; onoff@c=100: P95x1.22/P99x1.20; packer@c=10: P95x1.32/P99x1.10; periodic@c=30: P95x0.82/P99x1.15; poisson@c=10: P95x1.68/P99x1.28; poisson@c=100: P95x1.60/P99x1.21"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 15us, next_delay P99 537us, state 3530 B"
+      },
+      "ALL_PASS": false
+    }
+  },
+  "supplementary_fine_grid_baseline": {
+    "gamma_poisson": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "3/6 workloads: diurnal, idle_burst, onoff",
+          "30": "1/6 workloads: idle_burst",
+          "100": "1/6 workloads: periodic"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "drift@c=100: -9.4%; onoff@c=100: -3.1%; packer@c=10: -5.4%; packer@c=30: -3.0%; packer@c=100: -2.1%; periodic@c=10: -2.2%; poisson@c=30: -9.1%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x1.80/P99x1.53; diurnal@c=30: P95x2.09/P99x1.82; diurnal@c=100: P95x1.06/P99x1.30; drift@c=10: P95x1.11/P99x1.10; drift@c=30: P95x1.37/P99x1.29; idle_burst@c=10: P95x1.51/P99x1.92; idle_burst@c=30: P95x1.18/P99x1.34; onoff@c=30: P95x1.24/P99x1.17; packer@c=100: P95x1.17/P99x1.07; periodic@c=10: P95x1.18/P99x1.07; periodic@c=30: P95x1.71/P99x1.12"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 658 B"
+      },
+      "ALL_PASS": false
+    },
+    "gamma_poisson_sqrt": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "4/6 workloads: diurnal, drift, idle_burst, onoff",
+          "30": "3/6 workloads: drift, idle_burst, onoff",
+          "100": "3/6 workloads: drift, idle_burst, onoff"
+        }
+      },
+      "G2_no_harm": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x1.30/P99x1.16; diurnal@c=30: P95x1.14/P99x1.21; diurnal@c=100: P95x1.02/P99x1.17; idle_burst@c=10: P95x1.05/P99x1.37; idle_burst@c=30: P95x1.09/P99x1.21"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 661 B"
+      },
+      "ALL_PASS": false
+    },
+    "renewal_window": {
+      "G1_main_gain": {
+        "pass": false,
+        "detail": {
+          "10": "4/6 workloads: idle_burst, onoff, packer, periodic",
+          "30": "3/6 workloads: idle_burst, packer, periodic",
+          "100": "2/6 workloads: idle_burst, onoff"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "diurnal@c=10: -4.8%; diurnal@c=30: -2.9%; packer@c=100: -9.9%; periodic@c=100: -12.0%; poisson@c=10: -13.5%; poisson@c=30: -11.3%; poisson@c=100: -5.4%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x3.44/P99x2.12; diurnal@c=30: P95x2.45/P99x1.90; diurnal@c=100: P95x1.48/P99x1.48; drift@c=10: P95x1.12/P99x1.18; drift@c=30: P95x1.55/P99x1.35; drift@c=100: P95x1.29/P99x1.22; idle_burst@c=10: P95x1.81/P99x2.15; idle_burst@c=30: P95x1.41/P99x1.41; onoff@c=10: P95x1.28/P99x1.28; onoff@c=30: P95x1.49/P99x1.32; onoff@c=100: P95x1.17/P99x1.11; poisson@c=10: P95x2.03/P99x1.33; poisson@c=30: P95x1.38/P99x1.20; poisson@c=100: P95x1.58/P99x1.22"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 4us, next_delay P99 2us, state 731 B"
+      },
+      "ALL_PASS": false
+    },
+    "hazard_renewal": {
+      "G1_main_gain": {
+        "pass": true,
+        "detail": {
+          "10": "4/6 workloads: idle_burst, onoff, packer, periodic",
+          "30": "4/6 workloads: idle_burst, onoff, packer, periodic",
+          "100": "5/6 workloads: drift, idle_burst, onoff, packer, periodic"
+        }
+      },
+      "G2_no_harm": {
+        "pass": false,
+        "detail": "diurnal@c=10: -3.4%; poisson@c=10: -10.3%; poisson@c=30: -5.3%; poisson@c=100: -2.8%"
+      },
+      "G3_tail": {
+        "pass": false,
+        "detail": "diurnal@c=10: P95x2.50/P99x1.93; diurnal@c=30: P95x1.80/P99x1.71; diurnal@c=100: P95x1.27/P99x1.42; drift@c=10: P95x1.29/P99x1.22; drift@c=30: P95x1.35/P99x1.28; drift@c=100: P95x1.21/P99x1.21; idle_burst@c=10: P95x1.92/P99x2.18; idle_burst@c=30: P95x1.25/P99x1.34; onoff@c=10: P95x1.27/P99x1.27; onoff@c=30: P95x1.20/P99x1.21; packer@c=30: P95x1.11/P99x1.12; poisson@c=10: P95x1.68/P99x1.28; poisson@c=30: P95x1.62/P99x1.26; poisson@c=100: P95x1.33/P99x1.13"
+      },
+      "G4_negative_control": {
+        "pass": true,
+        "detail": "ok"
+      },
+      "G5_reliability": {
+        "pass": true,
+        "detail": "1050 runs, all packages discovered; failure isolation & state round-trip covered by unit tests"
+      },
+      "G6_resources": {
+        "pass": true,
+        "detail": "observe P99 15us, next_delay P99 537us, state 3530 B"
+      },
+      "ALL_PASS": false
+    }
+  }
+}

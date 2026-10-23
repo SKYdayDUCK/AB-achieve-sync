@@ -1,0 +1,18 @@
+started 3186
+batch: {max_files: 5, max_bytes: 1073741824, max_batch_bytes: 4294967296, max_wait_seconds: 5, min_age_seconds: 3}
+watch: {hold_back_newest: 0, idle_flush_factor: 4, idle_flush_min_seconds: 10, idle_flush_max_seconds: 60}
+
+producer start
+producer stopped at +106s; waiting for idle flush
+batch ca1a273631b5 files=1 ready - last file closed =   -3.8s   [r0w5_0000.png .. r0w5_0000.png]
+batch c90425ffac92 files=1 ready - last file closed =   -5.1s   [r0w5_0001.png .. r0w5_0001.png]
+batch f448120ce770 files=1 ready - last file closed =   -5.4s   [r0w5_0002.png .. r0w5_0002.png]
+batch 154777508fca files=1 ready - last file closed =   -5.1s   [r0w5_0003.png .. r0w5_0003.png]
+batch a958ef74a73b files=1 ready - last file closed =   -5.1s   [r0w5_0004.png .. r0w5_0004.png]
+batch 31b6b025c8e4 files=1 ready - last file closed =   -5.6s   [r0w5_0005.png .. r0w5_0005.png]
+batch 7c375d7efb00 files=1 ready - last file closed =   -4.3s   [r0w5_0006.png .. r0w5_0006.png]
+batch bebf001f3de3 files=1 ready - last file closed =   -4.7s   [r0w5_0007.png .. r0w5_0007.png]
+P1 integrity: 8/8 byte-identical
+P2 packed-while-open violations (hold_back=0, max_wait=5): [('20261023T065156Z-ca1a273631b5', -3.8), ('20261023T065208Z-c90425ffac92', -5.1), ('20261023T065220Z-f448120ce770', -5.4), ('20261023T065235Z-154777508fca', -5.1), ('20261023T065249Z-a958ef74a73b', -5.1), ('20261023T065301Z-31b6b025c8e4', -5.6), ('20261023T065318Z-7c375d7efb00', -4.3), ('20261023T065330Z-bebf001f3de3', -4.7)]
+P3 tail: last file closed, last batch READY +-4.7s later; drained=True; watch at stop: {'idle': False, 'held_back': [], 'last_activity_age_s': None, 'idle_flush_threshold_s': None}
+P4 final A: {'DELETED': 92} {'images_waiting': 0, 'oldest_waiting_age_s': 0.0, 'in_progress_tmp_files': 0, 'rejected_unsafe_names': [], 'non_image_ignored': 0, 'subdirs_ignored': 0}

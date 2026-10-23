@@ -1,0 +1,8 @@
+# For a completely isolated A/B smoke test ONLY, no encryption.
+node: {producer_id: localA, consumer_id: localB}
+paths: {root_dir: /tmp/aas-example-a, input_dir: /tmp/aas-generated}
+batch: {max_files: 2, max_bytes: 10485760, max_batch_bytes: 10485760, max_wait_seconds: 0, min_age_seconds: 0}
+archive: {strategy: tar, verify_final_archive: true, delete_source_after_verified_publish: true}
+crypto: {strategy: none}
+ack: {delete_bundle_only_after_ack: true, ack_grace_seconds: 0}
+capacity: {critical_free_bytes: 0, warn_free_bytes: 0, auto_pause_generator: false, auto_delete_unacked: false}

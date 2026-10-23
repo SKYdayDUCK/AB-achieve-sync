@@ -1,0 +1,1 @@
+OK 20261022T095613Z-6191491c7b5b: A=DELETED, B=ACK_CONFIRMED, output files=3, result={'observed': 1, 'new': 1, 'jobs': 1}

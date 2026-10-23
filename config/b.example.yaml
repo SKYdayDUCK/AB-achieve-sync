@@ -1,0 +1,43 @@
+node:
+  consumer_id: desktop-b-01
+  producer_id: gpu-a-01
+paths:
+  root_dir: D:/AAS
+remote:
+  transport: ssh_aasctl
+  host: gpu.example.com
+  user: aas
+  port: 22
+  host_key_checking: strict
+  identity_file: C:/Users/example/.ssh/id_ed25519_aas
+  emergency_identity_file: C:/Users/example/.ssh/id_ed25519_aas_emergency
+  known_hosts_file: C:/Users/example/.ssh/known_hosts
+crypto:
+  strategy: age_x25519
+  identity_keys:
+    - C:/Users/example/.config/aas/b_primary.key
+    # use offline backup only during manual recovery, if appropriate
+scheduler:
+  strategy: fixed_interval
+  fixed_interval:
+    interval_seconds: 300
+    immediate_scan_on_start: true
+    single_flight_discovery: true
+    immediate_recheck_on_new_ready: true
+    max_immediate_rechecks: 1
+  experimental:
+    adaptive_enabled: false
+    expected_archives_per_hour: 6.0 # metadata only; DOES NOT alter period
+  reconcile_interval_minutes: 30
+  remote_query_timeout_seconds: 30
+  network_retry:
+    initial_seconds: 10
+    max_seconds: 300
+    jitter: true
+transfer:
+  max_parallel_downloads: 2
+  chunk_bytes: 8388608
+  durable_queue: true
+  verify_full_bundle_sha256: true
+capacity:
+  min_free_bytes: 1073741824

@@ -1,0 +1,6 @@
+policy,n_observe,observe_p50_us,observe_p99_us,observe_max_us,next_delay_p50_us,next_delay_p99_us,next_delay_max_us,batch300_observe_plus_decide_p99_us,state_bytes_max
+fixed_interval,9915,0.1,0.2,13.0,0.2,0.2,155.2,1.1,21
+gamma_poisson,18884,2.2,3.7,132.4,1.0,1.5,349.0,147.4,658
+gamma_poisson_sqrt,6971,2.2,4.4,16.7,1.1,1.7,415.5,145.3,661
+renewal_window,9057,2.2,4.4,190.8,1.4,1.8,14.0,313.2,731
+hazard_renewal,6703,4.9,14.9,37.2,315.5,536.7,1085.7,635.9,3530
