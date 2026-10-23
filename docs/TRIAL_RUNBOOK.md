@@ -17,7 +17,7 @@
 
 ## 步骤
 1. 启动服务器，把 `host`、`port` 告诉我（或自己填入 b.yaml）。
-2. 上传代码并部署 A：`scp -r adaptive-archive-sync`、两个 SSH 公钥、两个 age 公钥 → `bash deploy/a_setup.sh <BASE> <INPUT> ...` → `bash deploy/aas-a-daemon.sh <BASE> start`。
+2. 上传代码并部署 A：`scp -r AB-achieve-sync`、两个 SSH 公钥、两个 age 公钥 → `bash deploy/a_setup.sh <BASE> <INPUT> ...` → `bash deploy/aas-a-daemon.sh <BASE> start`。
 3. 向 `INPUT` 上传一张图片（试运行把 `AAS_MAX_WAIT=30`，30 秒后即成批）。
 4. B：`runtime\aas-b.cmd crypto-probe` → `runtime\aas-b.cmd once`；检查 `runtime\b\output\gpu-a-01\<batch_id>\` 有图、A 端 `aas-a status` 为 DELETED、`input` 与 `ready` 已清空。
 5. 验证隔离：普通 key 执行 `emergency-stream` 应被拒；再测手动应急 `runtime\aas-b.cmd emergency`。

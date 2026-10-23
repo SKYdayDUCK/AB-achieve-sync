@@ -3,7 +3,7 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "adaptive-archive-sync"
+name = "ab-achieve-sync"
 version = "1.2.0"
 description = "Single-producer single-consumer crash-recoverable archive synchronization"
 readme = "README.md"
@@ -21,8 +21,8 @@ requires-python = ">=3.11"
 dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
 
 [project.urls]
-Homepage = "https://github.com/SKYdayDUCK/adaptive-archive-sync"
-Issues = "https://github.com/SKYdayDUCK/adaptive-archive-sync/issues"
+Homepage = "https://github.com/SKYdayDUCK/AB-achieve-sync"
+Issues = "https://github.com/SKYdayDUCK/AB-achieve-sync/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]

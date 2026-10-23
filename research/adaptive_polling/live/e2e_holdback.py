@@ -45,7 +45,7 @@ def png(kb):
 
 
 # ---- configure A for this run (config is read at daemon start) and restart it
-D = f"{BASE}/upload/adaptive-archive-sync/deploy/aas-a-daemon.sh"
+D = f"{BASE}/upload/AB-achieve-sync/deploy/aas-a-daemon.sh"
 run(c, f"bash {D} {BASE} stop")
 run(c, f"sed -i 's/max_wait_seconds: [0-9]*/max_wait_seconds: {MAX_WAIT}/; s/hold_back_newest: [0-9]*/hold_back_newest: {HOLD_BACK}/' {BASE}/aas-keys/a.yaml")
 print(run(c, f"AAS_INTERVAL=2 bash {D} {BASE} start; grep -E 'max_wait|watch' {BASE}/aas-keys/a.yaml")[1], flush=True)

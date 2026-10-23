@@ -25,7 +25,7 @@ B 在时刻 `q` 发起一次 READY 查询（一次 SSH 请求）：
   “成功但 0 个 READY” 是一个**有效的暴露量观测**（计数 0，暴露 `s - s_prev`）。
 * **失败**（超时/断网/认证失败）：**不揭示任何到达信息**，不得当成“0 个包”，
   不调用 `PollPolicy.observe`。失败后的重试间隔由独立的 `RetryPolicy` 决定
-  （与 `adaptive-archive-sync/src/aas/b/scheduling/policy.py::RetryPolicy` 相同：初值 10s、翻倍、上限 300s；
+  （与 `AB-achieve-sync/src/aas/b/scheduling/policy.py::RetryPolicy` 相同：初值 10s、翻倍、上限 300s；
   仿真中关闭 jitter 以保证可复现）。
 * 失败之后的下一次成功查询的暴露区间是 `(上一次成功快照, 本次快照]`，
   它**包含**故障期，这是正确的：因为 `ready_at` 是精确的，故障期内到达的包会在这次成功查询中

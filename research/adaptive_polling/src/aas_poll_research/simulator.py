@@ -1,6 +1,6 @@
 """Offline discrete-event simulator for B-side READY discovery (paired, reproducible).
 
-Mirrors adaptive-archive-sync/src/aas/b/core.py::run():
+Mirrors AB-achieve-sync/src/aas/b/core.py::run():
   * scan immediately at start; single-flight scans;
   * success -> policy.observe(obs) -> next_due = completed + policy.next_delay_seconds(ctx);
   * one bounded immediate re-check when a scan found new READY (PATCH-01 §2.3);

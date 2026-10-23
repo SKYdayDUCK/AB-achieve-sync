@@ -1,10 +1,12 @@
-# Adaptive Archive Sync (AAS)
+# AB-achieve-sync
 
-[![tests](https://github.com/SKYdayDUCK/adaptive-archive-sync/actions/workflows/tests.yml/badge.svg)](https://github.com/SKYdayDUCK/adaptive-archive-sync/actions/workflows/tests.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![tests](https://github.com/SKYdayDUCK/AB-achieve-sync/actions/workflows/tests.yml/badge.svg)](https://github.com/SKYdayDUCK/AB-achieve-sync/actions/workflows/tests.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **把云服务器上不断生成的图片，可靠地同步到本地电脑，同步成功后才清理服务器上的文件。**
 
-*English: AAS reliably moves continuously generated images from a (GPU) cloud server "A" to a local PC "B" over SSH. A batches new images into verified, optionally age-encrypted tar bundles; B polls A, downloads over SSH, verifies, delivers, and only then acknowledges so that A may delete the bundle. Every deletion on A is gated by a persisted proof (verification certificate before the source images are deleted, a matching ACK before the bundle is deleted). B never connects to anything inbound; no public port is needed on the PC.*
+> 命名说明：项目名为 **AB-achieve-sync**（A = 服务器端，B = 本地端）。代码内部代号仍是 **AAS**（Python 包 `aas`、命令 `aas-a` / `aas-b` / `aasctl-shell`、配置里的 `aas-managed` 标记都保持不变，以免破坏已有部署）；早期名称 *Adaptive Archive Sync* 保留在 `docs/reference/` 的原始设计文档中。**产品本身没有自适应机制**：B 的轮询是固定间隔，可选 long-poll 唤醒；自适应轮询只是一个独立的、仍开放的研究方向（见下文和 `research/`），不在产品运行路径里。
+
+*English: AB-achieve-sync (internal code name AAS) reliably moves continuously generated images from a (GPU) cloud server "A" to a local PC "B" over SSH. A batches new images into verified, optionally age-encrypted tar bundles; B polls A, downloads over SSH, verifies, delivers, and only then acknowledges so that A may delete the bundle. Every deletion on A is gated by a persisted proof (verification certificate before the source images are deleted, a matching ACK before the bundle is deleted). B never connects to anything inbound; no public port is needed on the PC.*
 
 > 状态：工程 MVP。在真实云服务器 + Windows 本机上完成了端到端试运行（见 [测试与验证](#测试与验证)），**尚未做 72 小时长稳、GiB 级大包、macOS 验证**，不要把它当作无人值守的唯一数据副本。
 
