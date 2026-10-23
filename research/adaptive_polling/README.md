@@ -43,7 +43,7 @@ python -B experiments\run_all.py --skip-sim         # 复用 results\runs.csv，
 
 ## 实机实验脚本（live/）
 
-需要一台按主仓库 README 部署好的 A，并设置环境变量：`AAS_HOST` `AAS_PORT` `AAS_PW`（仅用于上传测试文件的密码登录）、`AAS_REMOTE_BASE`（服务器上的 AAS 根目录）、`AAS_B_CONFIG`（B 的配置文件）、`AAS_RUNTIME`（B 的运行目录）。依赖：`pip install paramiko numpy pillow matplotlib pyyaml`。
+需要一台按主仓库 README 部署好的 A，并设置环境变量：`AAS_HOST` `AAS_PORT` `AAS_PW`（仅用于上传测试文件的密码登录）、`AAS_REMOTE_BASE`（服务器上的 AAS 根目录）、`AAS_B_CONFIG`（B 的配置文件）、`AAS_RUNTIME`（B 的运行目录）。依赖：`pip install paramiko numpy scipy pillow matplotlib pyyaml`。
 
 - `live_race.py` / `analyze_race.py` / `replay_phases.py`：多个轮询策略同时对同一台真实 A 做只读轮询的竞赛与随机相位重放。
 - `e2e_full.py` / `analyze_e2e.py`：随机到达 + 干扰文件的完整端到端，对比 long-poll 唤醒与固定轮询。

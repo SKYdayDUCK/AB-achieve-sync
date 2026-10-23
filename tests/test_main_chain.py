@@ -111,6 +111,7 @@ def test_p07_corrupted_bundle_blocks_remaining_source_unlinks(node_factory):
     with pytest.raises(KeyboardInterrupt): a.package(bid)
     a.clean_sources=orig
     remain={p.name for p in (a.staging/bid).iterdir()}
+    (a.ready/bid/'bundle').chmod(0o600)  # published files are read-only (0440); non-root users cannot tamper without this
     with (a.ready/bid/'bundle').open('r+b') as file:
         file.seek(10)
         byte=file.read(1)
