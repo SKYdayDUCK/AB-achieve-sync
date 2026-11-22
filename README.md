@@ -2,11 +2,11 @@
 
 [![tests](https://github.com/SKYdayDUCK/AB-achieve-sync/actions/workflows/tests.yml/badge.svg)](https://github.com/SKYdayDUCK/AB-achieve-sync/actions/workflows/tests.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**把云服务器上不断生成的图片，可靠地同步到本地电脑，同步成功后才清理服务器上的文件。**
+**通过 SSH 把服务器上的图片、模型权重和其他输出同步到本机。支持多目录映射、断点续传、SHA-256 校验和确认收件后清理。**
 
 > 命名说明：项目名为 **AB-achieve-sync**（A = 服务器端，B = 本地端）。代码内部代号仍是 **AAS**（Python 包 `aas`、命令 `aas-a` / `aas-b` / `aasctl-shell`、配置里的 `aas-managed` 标记都保持不变，以免破坏已有部署）；早期名称 *Adaptive Archive Sync* 保留在 `docs/reference/` 的原始设计文档中。**产品本身没有自适应机制**：B 的轮询是固定间隔，可选 long-poll 唤醒；自适应轮询只是一个独立的、仍开放的研究方向（见下文和 `research/`），不在产品运行路径里。
 
-*English: AB-achieve-sync (internal code name AAS) reliably moves continuously generated images from a (GPU) cloud server "A" to a local PC "B" over SSH. A batches new images into verified, optionally age-encrypted tar bundles; B polls A, downloads over SSH, verifies, delivers, and only then acknowledges so that A may delete the bundle. Every deletion on A is gated by a persisted proof (verification certificate before the source images are deleted, a matching ACK before the bundle is deleted). B never connects to anything inbound; no public port is needed on the PC.*
+*English: AB-achieve-sync (AAS) transfers images, model checkpoints and other outputs from a server to a desktop over SSH. It supports per-file or per-directory resources, multiple source-to-destination mappings, resumable downloads, SHA-256 verification and optional deletion after acknowledgement. The existing image archive mode supports verified tar bundles and optional age encryption. B initiates the connection.*
 
 > 状态：工程 MVP。在真实云服务器 + Windows 本机上完成了端到端试运行（见 [测试与验证](#测试与验证)），**尚未做 72 小时长稳、GiB 级大包、macOS 验证**，不要把它当作无人值守的唯一数据副本。
 
@@ -15,11 +15,12 @@
 ## 目录
 
 1. [项目简介](#项目简介)（使用场景、工作流程、可靠性取舍）
-2. [配置教程](#配置教程)（部署 A、部署 B、配置详解、运行与验证、常见问题）
-3. [测试与验证](#测试与验证)
-4. [自适应轮询研究（仍开放）](#自适应轮询研究仍开放)
-5. [后续开发路线](#后续开发路线)
-6. [文档索引与已知限制](#文档索引与已知限制)
+2. [文件资源同步](#文件资源同步)（多目录映射、逐文件或目录传输、ACK 清理）
+3. [图片归档模式配置](#配置教程)（部署 A、部署 B、配置详解、运行与验证、常见问题）
+4. [测试与验证](#测试与验证)
+5. [自适应轮询研究（仍开放）](#自适应轮询研究仍开放)
+6. [后续开发路线](#后续开发路线)
+7. [文档索引与已知限制](#文档索引与已知限制)
 
 ---
 
@@ -27,10 +28,10 @@
 
 ## 使用场景
 
-- **服务器 A**（Linux，例如租用的 GPU 云主机）：图片生成程序（ComfyUI、Stable Diffusion 等）不断往一个目录里写图。服务器可能随时关机，磁盘不大，也不想长期保存。
+- **服务器 A**（Linux，例如租用的 GPU 云主机）：生成、训练或构建程序不断将产物写入一个或多个目录。
 - **本地 B**（Windows 或 Linux 的个人电脑）：在家里/办公室，没有公网 IP，**只能由 B 主动连接 A**。
 
-AAS 的做法：
+逐文件及时交付和目录映射使用[文件资源同步](#文件资源同步)。以下流程适用于批量打包的图片归档模式。
 
 1. **A 端部署**：监控图片目录，把新图片分批打成 tar 压缩包（可用 age 加密），**完整回读验包通过后**才删除原图，把压缩包放入“就绪”目录。
 2. **B 端部署**：定时轮询 A 的就绪列表（可选 long-poll 唤醒，出包即刻发现），通过 **SSH** 分块下载压缩包（支持断点续传），校验哈希、解密、解包、逐张核对，放进本地输出目录。
@@ -66,6 +67,38 @@ AAS 的做法：
 | 受限 SSH | `restrict,command="aasctl-shell ..."`，普通密钥与应急密钥权限互相隔离，无法执行任意命令、无法路径穿越 |
 
 **明确不保证**：A 整盘/实例损毁后的恢复（只有一份副本）、介质级安全擦除、应急通道的严格不丢不重、多生产者/多消费者。详见 [docs/SECURITY.md](docs/SECURITY.md)。
+
+---
+
+# 文件资源同步
+
+安装 `python -m pip install '.[files]'`。A、B 分别使用对应配置，指定预设后走文件资源协议。A 只为 B 的受限 SSH 密钥开放固定命令 `aas-res`。B 通过已知主机密钥验证 A，并分块读取资源。
+
+```sh
+# A（Linux）
+aas-a --config a.yaml --preset files run
+# 为专用公钥设置的 authorized_keys 行，替换示例路径、公钥和运行账号下的可执行文件位置
+# restrict,command="/opt/aas/bin/aas-res-shell --config /etc/aas/a.yaml --preset files" ssh-ed25519 <public-key>
+
+# B（Windows 或 Linux）
+aas-b --config b.yaml --preset files run
+aas-b --config b.yaml --preset files status
+```
+
+将 [A 示例](config/presets/files.a.yaml) 和 [B 示例](config/presets/files.b.yaml) 中的路径、主机和身份信息换成自己的值。A 的 `sources[].id` 对应 B 的 `paths.source_output_dirs` 键。示例中 `/srv/jobs/images/step0600/pose01.png` 会写到 `F:/received/images/step0600/pose01.png`，另一个源独立写到 `F:/received/reports/`。映射列表可设置备用目标，并按顺序选择可写入的目录。源目录可以稍后创建。各源根目录应互不重叠。
+
+| 配置 | 含义 |
+|---|---|
+| `resource_mode: file` | 每个符合筛选条件的文件单独排队、下载和确认 |
+| `resource_mode: directory` | 每个匹配目录的符合条件文件作为同一个资源交付，保留目录的相对路径 |
+| `subdir_glob` | `'.'` 指源根目录，`'*'` 指一级子目录，`'*/*'` 可匹配两级子目录 |
+| `suffixes`、`filenames` | 按后缀和可选精确文件名筛选，两者同时配置时取交集 |
+| `min_age_seconds`、`completion_marker` | 等待写入稳定，或等指定完成标记出现。生成器用临时文件原子重命名发布时，可把最短等待设为 `0` |
+| `delete_after_ack: true` | 接收端校验 SHA-256、保存交付回执并确认后，A 仅清理该资源内匹配清单的源文件。显式 `resource_mode` 下默认保留源文件 |
+
+B 的 `queue.jobs` 可按源 ID 和相对目录筛选任务。`transfer.target_batch_bytes` 控制每个接收批次的目标体积，`max_download_queue` 限制未完成批次，队列满时跳过新发现。`download_workers` 控制并行批次数。B 在状态目录写入队列状态、分资源进度和持久交付回执。同一个资源的租约阻止重复接收，中断后沿用已有部分文件。
+
+`--preset images` 提供图片校验和尾图等待策略，`--preset lora` 默认等待训练完成标记再发布所选步数的权重。省略 `--preset` 时，`aas-a` 和 `aas-b` 继续使用下文的图片归档流程。
 
 ---
 
@@ -270,14 +303,9 @@ aas-b --config b.yaml status          # B：传输队列
 
 # 后续开发路线
 
-**B 端**
-- [ ] B 端可关闭压缩包处理功能，仅对某个目录内的文件做**传输监控**（直接按文件传输）。
-- [ ] 可配置的文件类型：压缩监控与传输监控分别配置。
-- [ ] 可配置的监控目录：压缩监控与传输监控分别配置。
-
-**A 端**
-- [ ] A 端可关闭压缩/解压缩（打包）功能。
-- [ ] 更多轮询参数：可改变 B 端的行为；提供“单次传输”或“后续传输”的配置文件。
+**文件资源同步**
+- [x] 按文件或目录直接传输，独立配置源目录、文件筛选条件和本地目标。
+- [x] 支持单轮 `once` 和持续轮询 `run`，可设置接收批次大小和并发数。
 
 **产品化**
 - [ ] UI 界面。
@@ -286,7 +314,7 @@ aas-b --config b.yaml status          # B：传输队列
 **来自代码评审的待办**
 - [ ] `scan_once` 立即复查那次扫描的观测对策略不可见；生产观测对象缺少 `ready_at`（为任何自适应策略接入的前提）。
 - [ ] 被忽略的文件（非法名、超大）目前只在 `status` 中可见，缺少主动告警。
-- [ ] 每个 8 MiB 块一次 SSH 连接（Windows OpenSSH 无 ControlMaster），高延迟链路吞吐受限。
+- [ ] 优化旧图片归档模式在高延迟链路下的 SSH 连接开销。
 - [ ] 72 小时长稳、GiB 级大包、应急通道的真实环境验收。
 
 ---

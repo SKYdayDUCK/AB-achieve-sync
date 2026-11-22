@@ -1,0 +1,23 @@
+node: {producer_id: server-a, consumer_id: desktop-b}
+paths:
+  root_dir: F:/AAS
+  source_output_dirs:
+    images: [F:/received/images]
+    reports: [F:/received/reports]
+remote:
+  host: server.example.com
+  user: root
+  port: 22
+  identity_file: C:/Users/example/.ssh/aas_resources
+  known_hosts_file: C:/Users/example/.ssh/known_hosts
+scheduler:
+  strategy: fixed_interval
+  fixed_interval: {interval_seconds: 600}
+# Capacity counts unfinished byte-bounded batches, not roles.
+# A full queue skips catalog until the next 600-second poll; existing transfers continue.
+transfer: {max_download_queue: 4, target_batch_bytes: 1073741824, download_workers: 4, chunk_bytes: 8388608}
+capacity: {min_free_bytes: 2147483648}
+queue:
+  jobs:
+    - {source_id: images, key: '*', enabled: true}
+    - {source_id: reports, key: '*', enabled: true}

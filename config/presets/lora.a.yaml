@@ -1,0 +1,19 @@
+node: {producer_id: gpu-a, consumer_id: desktop-b}
+paths: {root_dir: /localdisk-tmp/aas-resources}
+sources:
+  - id: lora
+    root: /workspace/lora
+    subdir_glob: '*'
+    # A missing root or a not-yet-created character directory is pending, not an error.
+    suffixes: [.safetensors]
+    completion_marker: TRAIN_COMPLETE.json
+    checkpoint_min_step: 600
+    max_train_steps: 1500
+    include_final: true
+    min_age_seconds: 10
+    target_resource_bytes: 1073741824
+    cleanup:
+      enabled: false
+      checkpoint_steps: [100, 200, 300, 400, 500]
+lease: {seconds: 1200}
+scan_interval_seconds: 60

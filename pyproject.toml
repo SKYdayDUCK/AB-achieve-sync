@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ab-achieve-sync"
-version = "1.2.0"
-description = "Single-producer single-consumer crash-recoverable archive synchronization"
+version = "1.3.0"
+description = "Resumable SSH file and archive sync with directory mapping and verified delivery"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "SKYdayDUCK"}]
@@ -26,11 +26,13 @@ Issues = "https://github.com/SKYdayDUCK/AB-achieve-sync/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+files = ["paramiko>=3.4"]
 
 [project.scripts]
 aas-a = "aas.cli:main_a"
 aas-b = "aas.cli:main_b"
 aasctl-shell = "aas.cli:main_shell"
+aas-res-shell = "aas.resources.cli:main_shell"
 
 [tool.setuptools.packages.find]
 where = ["src"]

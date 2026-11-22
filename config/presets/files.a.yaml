@@ -1,0 +1,18 @@
+node: {producer_id: server-a, consumer_id: desktop-b}
+paths: {root_dir: /var/lib/aas/resources}
+sources:
+  - id: images
+    root: /srv/jobs/images
+    resource_mode: file
+    subdir_glob: '*'
+    suffixes: [.png]
+    min_age_seconds: 10
+    delete_after_ack: true
+  - id: reports
+    root: /srv/jobs/reports
+    resource_mode: directory
+    subdir_glob: '*'
+    suffixes: [.json, .zip]
+    completion_marker: COMPLETE.json
+lease: {seconds: 1200}
+scan_interval_seconds: 60

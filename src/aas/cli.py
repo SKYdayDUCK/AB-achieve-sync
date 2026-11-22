@@ -19,6 +19,9 @@ import tempfile
 
 
 def main_a():
+    if any(a=='--preset' or a.startswith('--preset=') for a in sys.argv):
+        from aas.resources.cli import main_a as resources_main
+        return resources_main()
     p = argparse.ArgumentParser(prog="aas-a")
     p.add_argument("--config", required=True)
     sub = p.add_subparsers(dest="action", required=True)
@@ -67,6 +70,9 @@ def main_a():
 
 
 def main_b():
+    if any(a=='--preset' or a.startswith('--preset=') for a in sys.argv):
+        from aas.resources.cli import main_b as resources_main
+        return resources_main()
     p = argparse.ArgumentParser(prog="aas-b")
     p.add_argument("--config", required=True)
     sub = p.add_subparsers(dest="action", required=True)

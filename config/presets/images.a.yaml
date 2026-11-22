@@ -1,0 +1,13 @@
+node: {producer_id: gpu-a, consumer_id: desktop-b}
+paths: {root_dir: /localdisk-tmp/aas-image-resources}
+sources:
+  - id: images
+    root: /workspace/generated
+    subdir_glob: '.'
+    suffixes: [.png, .jpg, .jpeg, .webp, .bmp, .gif, .tif, .tiff]
+    verify_images: true
+    min_age_seconds: 3
+    hold_back_newest: 1
+    idle_flush_seconds: 300
+lease: {seconds: 1200}
+scan_interval_seconds: 15
