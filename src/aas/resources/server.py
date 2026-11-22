@@ -33,6 +33,11 @@ def _json(value):
     return canonical(value).decode('utf-8')
 
 
+def _acknowledged_files(rows):
+    return {(item['name'], _json(item['stat'])) for row in rows if row['state'] == 'ACKED'
+            for item in json.loads(row['snapshot'])['files']}
+
+
 def _name(name):
     if not isinstance(name, str) or not name or name in ('.', '..') or name[-1] in ('.', ' '):
         raise ResourceError('UNSAFE_PATH', 'Expected an ordinary basename')
@@ -353,17 +358,26 @@ class ResourceServer:
                     result = self._snapshot(source, directory)
                     if not result:
                         with self.store.transaction() as db:
-                            old = db.execute("SELECT * FROM resources WHERE source_id=? AND resource_key=? AND state NOT IN ('ACKED','ACK_PENDING','HOLD','SUPERSEDED')", (sid,key)).fetchone()
+                            old = db.execute("SELECT * FROM resources WHERE source_id=? AND directory=? AND state NOT IN ('ACKED','ACK_PENDING','HOLD','SUPERSEDED')", (sid, str(directory))).fetchone()
                         marker_missing = source.get('completion_marker') and not (directory / source['completion_marker']).exists()
                         if old and (not self._intact(dict(old)) or marker_missing):
                             self._hold(old['resource_id'], 'Source files changed')
                             summary['held'] += 1
                         summary['incomplete'] += 1
                         continue
-                    snapshot, cleanup = result
-                    version = hash_obj({'source_id': sid, 'key': key, 'snapshot': snapshot})
+                    source_snapshot, cleanup = result
                     with self.store.transaction() as db:
-                        old = db.execute("SELECT * FROM resources WHERE source_id=? AND resource_key=? AND state NOT IN ('ACKED','SUPERSEDED')", (sid, key)).fetchone()
+                        rows = db.execute('SELECT * FROM resources WHERE source_id=? AND directory=?',
+                                          (sid, str(directory))).fetchall()
+                        # A retained or concurrently ACKed file cannot rejoin a later snapshot.
+                        acknowledged = _acknowledged_files(rows)
+                        files = [item for item in source_snapshot['files']
+                                 if (item['name'], _json(item['stat'])) not in acknowledged]
+                        if not files:
+                            continue
+                        snapshot = {**source_snapshot, 'files': files}
+                        version = hash_obj({'source_id': sid, 'key': key, 'snapshot': snapshot})
+                        old = next((row for row in rows if row['state'] not in ('ACKED', 'SUPERSEDED')), None)
                         if old and old['resource_id'] != version:
                             if old['state'] != 'ACK_PENDING':
                                 if not self._intact(dict(old)):
@@ -384,7 +398,7 @@ class ResourceServer:
                     if source.get('cleanup', {}).get('enabled') and (cleanup or private.exists()):
                         with self._resource_lock(version):
                             current_snapshot = self._snapshot(source, directory)
-                            if not current_snapshot or current_snapshot[0] != snapshot:
+                            if not current_snapshot or current_snapshot[0] != source_snapshot:
                                 raise ResourceError('SOURCE_CHANGED', 'Source changed before early-checkpoint cleanup')
                             for path, signature in cleanup:
                                 if _ordinary(path) != signature:
@@ -416,8 +430,8 @@ class ResourceServer:
         owner = None
         with self.store.transaction() as db:
             rows = [dict(r) for r in db.execute(
-                'SELECT * FROM resources WHERE source_id=? AND resource_key=? ORDER BY created,resource_id',
-                (sid, key))]
+                'SELECT * FROM resources WHERE source_id=? AND directory=? ORDER BY created,resource_id',
+                (sid, str(directory)))]
             for row in rows:
                 if row['state'] in ('ACKED', 'SUPERSEDED', 'ACK_PENDING', 'HOLD'):
                     continue
@@ -438,8 +452,7 @@ class ResourceServer:
             # version of a leased filename must never acquire a second owner.
             reserved = {item['name'] for row in rows if row['state'] not in ('ACKED', 'SUPERSEDED')
                         for item in json.loads(row['snapshot'])['files']}
-            acknowledged = {(item['name'], _json(item['stat'])) for row in rows if row['state'] == 'ACKED'
-                            for item in json.loads(row['snapshot'])['files']}
+            acknowledged = _acknowledged_files(rows)
             groups, group, total = [], [], 0
             if snapshot:
                 for item in snapshot['files']:

@@ -148,6 +148,30 @@ class ResourceClientIntegrationTests(unittest.TestCase):
         self.assertFalse(first.exists())
         self.assertFalse(second.exists())
 
+    def test_retained_directory_files_are_excluded_from_later_batches(self):
+        first = self.source(key='hero/final', name='first.bin', data=b'first',
+                            subdir_glob='*/*', resource_mode='directory')
+        stamp = first.stat().st_mtime - 1
+        os.utime(first, (stamp, stamp))
+        target = self.root/'directory-output'
+        self.bconfig['paths']['source_output_dirs'] = {'s1': [str(target)]}
+        server, transport, client = self.pair()
+
+        self.assertEqual(client.poll()['enqueued'], 1)
+        self.assertTrue(client.work_once())
+        self.assertTrue(first.exists())
+
+        later = self.source(key='hero/final', name='later.bin', data=b'later')
+        os.utime(later, (stamp, stamp))
+        self.assertEqual(client.poll()['enqueued'], 1)
+        published = server.catalog()['resources']
+        self.assertEqual([row['file_count'] for row in published], [1])
+        self.assertTrue(client.work_once())
+        self.assertEqual((target/'hero'/'final'/'later.bin').read_bytes(), b'later')
+        self.assertEqual([call['name'] for call in transport.calls if call['op']=='get'],
+                         ['first.bin', 'later.bin'])
+        self.assertEqual(client.poll()['enqueued'], 0)
+
     def test_ack_retry_rechecks_mapped_file_before_deletion(self):
         source = self.source(resource_mode='file', delete_after_ack=True)
         target = self.root/'verified-output'

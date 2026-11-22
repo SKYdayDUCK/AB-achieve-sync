@@ -98,6 +98,8 @@ aas-b --config b.yaml --preset files status
 
 B 的 `queue.jobs` 可按源 ID 和相对目录筛选任务。`transfer.target_batch_bytes` 控制每个接收批次的目标体积，`max_download_queue` 限制未完成批次，队列满时跳过新发现。`download_workers` 控制并行批次数。B 在状态目录写入队列状态、分资源进度和持久交付回执。同一个资源的租约阻止重复接收，中断后沿用已有部分文件。
 
+A 按源目录保留文件归属。追加文件时，已确认且保留在源目录的文件跳过下一批。调整分组大小或切换传输模式时，已经领取的文件仍由原资源交付。
+
 `--preset images` 提供图片校验和尾图等待策略，`--preset lora` 默认等待训练完成标记再发布所选步数的权重。省略 `--preset` 时，`aas-a` 和 `aas-b` 继续使用下文的图片归档流程。
 
 ---

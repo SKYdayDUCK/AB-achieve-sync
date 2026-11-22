@@ -35,6 +35,8 @@ class ResourceStore:
                 DROP INDEX IF EXISTS one_active_source_key;
                 CREATE INDEX IF NOT EXISTS resources_source_key
                     ON resources(source_id,resource_key);
+                CREATE INDEX IF NOT EXISTS resources_source_directory
+                    ON resources(source_id,directory);
                 CREATE TABLE IF NOT EXISTS ack_journal (
                     resource_id TEXT PRIMARY KEY, consumer_id TEXT NOT NULL, lease_token TEXT NOT NULL,
                     receipt TEXT NOT NULL, done TEXT NOT NULL DEFAULT '[]', complete INTEGER NOT NULL DEFAULT 0);

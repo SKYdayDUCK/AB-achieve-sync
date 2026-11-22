@@ -478,6 +478,28 @@ class ResourceServerTests(unittest.TestCase):
         self.assertIsNone(server.store.one(old_id)['manifest'])
         self.assertEqual(server.catalog()['resources'],resources)
 
+    def test_switching_root_to_file_mode_does_not_duplicate_the_existing_lease(self):
+        source = self.config['sources'][0]
+        source.update(subdir_glob='.', delete_after_ack=False)
+        path = self.data/'one.bin'
+        path.write_bytes(b'leased')
+        stamp = time.time() - 1
+        os.utime(path, (stamp, stamp))
+        _, rid, claim, receipt = self.server_claim()
+
+        source['resource_mode'] = 'file'
+        server = ResourceServer(self.config)
+        self.assertEqual([row['resource_id'] for row in server.catalog()['resources']], [rid])
+        self.assertEqual(server.ack(rid, 'B', claim['lease_token'], receipt)['status'], 'acked')
+        self.assertTrue(path.exists())
+        self.assertEqual(server.catalog()['resources'], [])
+
+        path.write_bytes(b'an updated version')
+        os.utime(path, (stamp, stamp))
+        later = server.catalog()['resources']
+        self.assertEqual(len(later), 1)
+        self.assertNotEqual(later[0]['resource_id'], rid)
+
     def test_preparing_and_expired_cached_manifest_pin_the_original_whole_resource(self):
         self.files()
         old=ResourceServer(self.config);rid=old.catalog()['resources'][0]['resource_id']
