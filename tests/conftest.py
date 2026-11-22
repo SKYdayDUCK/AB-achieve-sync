@@ -1,7 +1,9 @@
 from __future__ import annotations
 from dataclasses import replace
 import io
+import os
 from pathlib import Path
+import time
 import pytest
 from PIL import Image
 from aas.a.core import AService
@@ -58,8 +60,11 @@ def node_factory(tmp_path):
     b = BService(b_config, transport)
 
     def generate(n=2, prefix="image"):
+        generated_at = time.time() - 1
         for i in range(n):
             path = a.input / f"{prefix}_{i}.png"
             Image.new("RGB", (12+i, 8+i), (20+i, 30+i, 40+i)).save(path)
+            # Older Windows Python clocks may lag a new file's NTFS mtime.
+            os.utime(path, (generated_at, generated_at))
 
     return a, b, transport, generate

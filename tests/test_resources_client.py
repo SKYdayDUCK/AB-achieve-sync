@@ -271,15 +271,22 @@ class ResourceClientIntegrationTests(unittest.TestCase):
         self.source('s2','heroA')
         self.source('s2','heroB')
         queue = self.root/'local-jobs.json'
-        jobs = [{'source_id':'s2','key':'heroB'}, {'source_id':'s1','key':'heroA'}, {'source_id':'s2','key':'heroA'}]
-        queue.write_text(json.dumps({'jobs':jobs}),encoding='utf-8')
         self.bconfig['queue_file'] = str(queue)
         server,transport,client = self.pair()
-        self.assertEqual(client.poll()['enqueued'],3)
-        self.assertEqual([(row['source_id'],row['resource_key']) for row in client.rows()], [('s2','heroB'),('s1','heroA'),('s2','heroA')])
+        resources = sorted(server.catalog()['resources'], key=lambda row: row['resource_id'], reverse=True)
+        jobs = [{'source_id': row['source_id'], 'key': row['key']} for row in resources]
+        queue.write_text(json.dumps({'jobs':jobs}),encoding='utf-8')
+        # Coarse clocks can give every row in one poll the same creation time.
+        with patch('aas.resources.client.time.time', return_value=1234567890.0):
+            self.assertEqual(client.poll()['enqueued'],3)
+        client = ResourceClient(self.bconfig, transport=transport)
+        expected_order = [(job['source_id'], job['key']) for job in jobs]
+        self.assertEqual([(row['source_id'],row['resource_key']) for row in client.rows()], expected_order)
         while client.work_once():
             pass
-        for sid,key in [('s2','heroB'),('s1','heroA'),('s2','heroA')]:
+        claims = [call['resource_id'] for call in transport.calls if call['op'] == 'claim']
+        self.assertEqual(claims, [row['resource_id'] for row in resources])
+        for sid,key in expected_order:
             self.assertEqual(self.output(sid,key).read_bytes(),b'0123456789'*8)
 
     def test_future_missing_directory_is_not_created_and_later_discovered(self):

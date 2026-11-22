@@ -55,7 +55,8 @@ class ResourceClient:
         except BaseException:c.rollback();raise
         finally:c.close()
     def rows(self):
-        with self.tx() as c:return [dict(r) for r in c.execute('SELECT * FROM resources ORDER BY created,resource_id')]
+        # SQLite row IDs retain insertion order when discovery timestamps tie.
+        with self.tx() as c:return [dict(r) for r in c.execute('SELECT * FROM resources ORDER BY rowid')]
     def pending_count(self):
         with self.tx() as c:return c.execute("SELECT COUNT(*) FROM resources WHERE state NOT IN ('DONE','SKIPPED')").fetchone()[0]
     @staticmethod
@@ -65,7 +66,7 @@ class ResourceClient:
         with self.tx() as c:return self._pending_batches(c)
     @staticmethod
     def _batch_rows(c):
-        return [dict(row) for row in c.execute("SELECT b.batch_id,b.created,b.origin,COUNT(r.resource_id) AS resource_count,SUM(CASE WHEN r.state NOT IN ('DONE','SKIPPED') THEN 1 ELSE 0 END) AS pending_resource_count FROM download_batches b LEFT JOIN resources r ON r.batch_id=b.batch_id GROUP BY b.batch_id ORDER BY b.created,b.batch_id")]
+        return [dict(row) for row in c.execute("SELECT b.batch_id,b.created,b.origin,COUNT(r.resource_id) AS resource_count,SUM(CASE WHEN r.state NOT IN ('DONE','SKIPPED') THEN 1 ELSE 0 END) AS pending_resource_count FROM download_batches b LEFT JOIN resources r ON r.batch_id=b.batch_id GROUP BY b.batch_id ORDER BY b.rowid")]
     def batch_rows(self):
         with self.tx() as c:return self._batch_rows(c)
     def _set(self,rid,state,**values):
@@ -138,7 +139,7 @@ class ResourceClient:
         with self.claim_lock:
             selected=None
             with self.tx() as c:
-                candidates=c.execute("SELECT * FROM resources WHERE state IN ('QUEUED','RETRY','ACK_PENDING') AND next_attempt<=? ORDER BY CASE WHEN state='ACK_PENDING' THEN 0 ELSE 1 END,created,resource_id",(time.time(),))
+                candidates=c.execute("SELECT * FROM resources WHERE state IN ('QUEUED','RETRY','ACK_PENDING') AND next_attempt<=? ORDER BY CASE WHEN state='ACK_PENDING' THEN 0 ELSE 1 END,rowid",(time.time(),))
                 for row in candidates:
                     if row['resource_id'] in self.inflight or row['batch_id'] in self.inflight.values():continue
                     c.execute("UPDATE resources SET state='RUNNING',attempts=attempts+1,updated=? WHERE resource_id=?",(time.time(),row['resource_id']))
